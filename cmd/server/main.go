@@ -8,7 +8,7 @@ import (
 	"os/signal"
 )
 
-func main(){
+func main() {
 	stop := make(chan os.Signal, 1)
 
 	signal.Notify(stop, os.Interrupt)
@@ -18,11 +18,13 @@ func main(){
 		addr = ":8887"
 	}
 
-	s:=NewServer()
+	mapStorage := NewMapStorageRepository()
 
-	h := &http.Server{Addr: addr, Handler: s }
+	s := NewServer(&mapStorage)
 
-	go func(){
+	h := &http.Server{Addr: addr, Handler: s}
+
+	go func() {
 		log.Printf("Listening on %s\n", addr)
 
 		if err := h.ListenAndServe(); err != nil {
