@@ -15,7 +15,7 @@ type HybridStorage struct {
 }
 
 func NewHybridRepository() repository.TaskStorage {
-	repository := HybridStorage{ storage:make(map[int64]*models.Task,1000), keys: make([]int64,1000) }
+	repository := HybridStorage{ storage:map[int64]*models.Task{}, keys: []int64{} }
 	return &repository
 }
 

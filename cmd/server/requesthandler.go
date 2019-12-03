@@ -16,12 +16,12 @@ import (
 
 type RequestHandler struct {
 	mux         *http.ServeMux
-	taskStorage *repository.TaskStorage
+	taskStorage repository.TaskStorage
 	counter     common.CounterInt64
 	httpClient http.Client
 }
 
-func NewRequestHandler(ts *repository.TaskStorage, timeout time.Duration) http.Handler {
+func NewRequestHandler(ts repository.TaskStorage, timeout time.Duration) http.Handler {
 	mux := http.NewServeMux()
 
 	s := &RequestHandler{mux: mux, taskStorage: ts, counter: common.NewCounterInt64(),httpClient:http.Client{Timeout:timeout}}
@@ -92,6 +92,8 @@ func (s *RequestHandler) taskCreate(w http.ResponseWriter, r *http.Request, task
 	log.Println(string(body))
 	task.Length = len(body)
 	task.ID = s.counter.NextValue()
+
+	s.taskStorage.Add(task)
 
 	err = json.NewEncoder(w).Encode(task)
 	if err != nil {
