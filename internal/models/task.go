@@ -17,7 +17,7 @@ type Task struct {
 	ID          int64
 	Method      string
 	URL         string
-	Header      http.Handler
+	Header      http.Header
 	RequestBody string
 
 	StatusCode int

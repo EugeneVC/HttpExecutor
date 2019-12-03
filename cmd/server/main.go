@@ -27,7 +27,7 @@ func main() {
 		log.Fatal("Wrong timeout",os.Getenv("TIMEOUT"))
 	}
 
-	mapStorage := NewMapStorageRepository()
+	mapStorage := NewHybridRepository()
 	s := NewRequestHandler(&mapStorage,time.Duration(timeout)*time.Second)
 
 	h := &http.Server{Addr: addr, Handler: s}
