@@ -1,7 +1,9 @@
 package main
 
 import (
+	"common"
 	"encoding/json"
+	"fmt"
 	"log"
 	"models"
 	"net/http"
@@ -9,14 +11,15 @@ import (
 )
 
 type Server struct {
-	mux           *http.ServeMux
+	mux         *http.ServeMux
 	taskStorage *repository.TaskStorage
+	counter     common.CounterInt64
 }
 
 func NewServer(ts *repository.TaskStorage) http.Handler {
 	mux := http.NewServeMux()
 
-	s := &Server{mux: mux, taskStorage: ts}
+	s := &Server{mux: mux, taskStorage: ts, counter: common.NewCounter()}
 
 	//REST
 	mux.HandleFunc("/tasks", s.TasksHandler)
@@ -39,26 +42,34 @@ func (s Server) TasksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s Server) taskCreate(w http.ResponseWriter, r *http.Request) {
+func (s *Server) taskCreate(w http.ResponseWriter, r *http.Request) {
 	var task models.Task
 
 	log.Printf("taskCreate")
+
 	w.Header().Set("Content-Type", "application/json")
 
 	err := json.NewDecoder(r.Body).Decode(&task)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err)
 		return
 	}
 
-	if !task.ValidateRequest(){
+	if err = task.ValidateRequest(); err!=nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err)
 		return
 	}
+
+	task.ID = s.counter.NextValue()
+
+
 
 	err = json.NewEncoder(w).Encode(task)
-	if err!=nil{
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err)
 		return
 	}
 }

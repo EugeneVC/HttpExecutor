@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 )
@@ -17,15 +18,15 @@ type Task struct {
 	RequestBody string
 }
 
-func (t Task) ValidateRequest() bool {
+func (t Task) ValidateRequest() error {
 	if _, ok := allowMethods[t.Method]; !ok {
-		return false
+		return errors.New("Unknown method")
 	}
 	if _, err := url.Parse(t.URL); err != nil {
-		return false
+		return errors.New("Wrong URL")
 	}
 
-	return true
+	return nil
 }
 
 func (t Task) Generate() {
