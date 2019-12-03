@@ -2,12 +2,15 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 )
 
 var allowMethods = map[string]bool{
 	"GET": true,
+	"POST":true,
+	"LIST" :true,
 }
 
 type Task struct {
@@ -16,6 +19,9 @@ type Task struct {
 	URL         string
 	Header      http.Handler
 	RequestBody string
+
+	StatusCode int
+	Length int
 }
 
 func (t Task) ValidateRequest() error {
@@ -29,6 +35,6 @@ func (t Task) ValidateRequest() error {
 	return nil
 }
 
-func (t Task) Generate() {
-
+func (t Task) String() string{
+	return fmt.Sprintf("%d [%s] %s",t.ID,t.Method,t.URL)
 }

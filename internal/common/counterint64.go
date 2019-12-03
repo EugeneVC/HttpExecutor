@@ -6,7 +6,7 @@ type CounterInt64 struct {
 	value int64
 }
 
-func NewCounter() CounterInt64 {
+func NewCounterInt64() CounterInt64 {
 	return CounterInt64{}
 }
 

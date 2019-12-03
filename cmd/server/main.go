@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
+	"time"
 )
 
 func main() {
@@ -13,14 +16,19 @@ func main() {
 
 	signal.Notify(stop, os.Interrupt)
 
-	addr := ":" + os.Getenv("PORT")
-	if addr == ":" {
-		addr = ":8887"
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	addr := os.Getenv("ADDR")
+	timeout,err := strconv.Atoi(os.Getenv("TIMEOUT"))
+	if err!=nil{
+		log.Fatal("Wrong timeout",os.Getenv("TIMEOUT"))
 	}
 
 	mapStorage := NewMapStorageRepository()
-
-	s := NewServer(&mapStorage)
+	s := NewRequestHandler(&mapStorage,time.Duration(timeout)*time.Second)
 
 	h := &http.Server{Addr: addr, Handler: s}
 
