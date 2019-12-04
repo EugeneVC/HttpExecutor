@@ -22,13 +22,13 @@ func main() {
 	}
 
 	addr := os.Getenv("ADDR")
-	timeout,err := strconv.Atoi(os.Getenv("TIMEOUT"))
-	if err!=nil{
-		log.Fatal("Wrong timeout",os.Getenv("TIMEOUT"))
+	timeout, err := strconv.Atoi(os.Getenv("TIMEOUT"))
+	if err != nil {
+		log.Fatal("Wrong timeout", os.Getenv("TIMEOUT"))
 	}
 
 	mapStorage := NewHybridRepository()
-	s := NewRequestHandler(mapStorage,time.Duration(timeout)*time.Second)
+	s := NewRequestHandler(mapStorage, time.Duration(timeout)*time.Second)
 
 	h := &http.Server{Addr: addr, Handler: s}
 

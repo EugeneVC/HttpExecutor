@@ -10,16 +10,16 @@ import (
 
 type HybridStorage struct {
 	storage map[int64]*models.Task
-	keys []int64 //always sorted
-	rw	sync.RWMutex
+	keys    []int64 //always sorted
+	rw      sync.RWMutex
 }
 
 func NewHybridRepository() repository.TaskStorage {
-	repository := HybridStorage{ storage:map[int64]*models.Task{}, keys: []int64{} }
+	repository := HybridStorage{storage: map[int64]*models.Task{}, keys: []int64{}}
 	return &repository
 }
 
-func (hs *HybridStorage) Add(task *models.Task){
+func (hs *HybridStorage) Add(task *models.Task) {
 	hs.rw.Lock()
 	defer hs.rw.Unlock()
 
@@ -27,12 +27,12 @@ func (hs *HybridStorage) Add(task *models.Task){
 	hs.storage[task.ID] = task
 }
 
-func (hs *HybridStorage) Delete(key int64) error{
+func (hs *HybridStorage) Delete(key int64) error {
 	hs.rw.Lock()
 	defer hs.rw.Unlock()
 
-	idx:=sort.Search(len(hs.keys),func(i int) bool {return hs.keys[i] >= key})
-	if idx==len(hs.keys){
+	idx := sort.Search(len(hs.keys), func(i int) bool { return hs.keys[i] >= key })
+	if idx == len(hs.keys) {
 		return errors.New("Not found")
 	}
 
@@ -44,36 +44,39 @@ func (hs *HybridStorage) Delete(key int64) error{
 	return nil
 }
 
-func (hs *HybridStorage) Get(key int64) (*models.Task,error){
+func (hs *HybridStorage) Get(key int64) (*models.Task, error) {
 	hs.rw.RLock()
 	defer hs.rw.RUnlock()
 
-	task,ok := hs.storage[key]
+	task, ok := hs.storage[key]
 	if !ok {
-		return nil,errors.New("Not found")
+		return nil, errors.New("Not found")
 	}
 
-	return task,nil
+	return task, nil
 }
 
-func (hs *HybridStorage) Gets(offset,limit int) ([]*models.Task, error){
+func (hs *HybridStorage) Gets(offset, limit int) ([]*models.Task, error) {
 	hs.rw.RLock()
 	defer hs.rw.RUnlock()
 
-	if offset+limit>len(hs.keys){
-		return nil,errors.New("Wrong params")
+	if offset < 0 || limit < 0 || offset >= len(hs.keys) {
+		return nil, errors.New("Wrong params")
+	}
+
+	if limit == 0 {
+		return nil, nil
+	}
+
+	if offset+limit >= len(hs.keys) {
+		limit = len(hs.keys) - offset
 	}
 
 	tasks := []*models.Task{}
 
-	for _,key :=range hs.keys[offset:offset+limit]{
+	for _, key := range hs.keys[offset : offset+limit] {
 		tasks = append(tasks, hs.storage[key])
 	}
 
-	return tasks,nil
+	return tasks, nil
 }
-
-
-
-
-

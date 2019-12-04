@@ -7,10 +7,9 @@ import (
 	"net/url"
 )
 
-var allowMethods = map[string]bool{
+var allowCreateMethods = map[string]bool{
 	"GET": true,
 	"POST":true,
-	"LIST" :true,
 }
 
 type Task struct {
@@ -24,8 +23,8 @@ type Task struct {
 	Length int
 }
 
-func (t Task) ValidateRequest() error {
-	if _, ok := allowMethods[t.Method]; !ok {
+func (t Task) ValidateCreateRequest() error {
+	if _, ok := allowCreateMethods[t.Method]; !ok {
 		return errors.New("Unknown method")
 	}
 	if _, err := url.Parse(t.URL); err != nil {
