@@ -60,7 +60,7 @@ func (hs *HybridStorage) Gets(offset, limit int) ([]*models.Task, error) {
 	hs.rw.RLock()
 	defer hs.rw.RUnlock()
 
-	if offset < 0 || limit < 0 || offset >= len(hs.keys) {
+	if offset < 0 || limit < 0 || offset > len(hs.keys) {
 		return nil, errors.New("Wrong params")
 	}
 

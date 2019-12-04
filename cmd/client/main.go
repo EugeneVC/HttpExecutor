@@ -24,6 +24,8 @@ func createTask(serverAddress string, taskURL []string) {
 
 			go func(method, url string) {
 
+				defer wg.Done()
+
 				task := models.Task{Method: method, URL: url}
 
 				bodyRequest, err := json.Marshal(task)
@@ -53,8 +55,6 @@ func createTask(serverAddress string, taskURL []string) {
 				}
 
 				log.Printf("SUCCESS: %#v", task)
-
-				wg.Done()
 			}(method, val)
 		}
 	}
@@ -69,12 +69,19 @@ func getTasks(serverAddress string){
 		return
 	}
 
+	if resp.StatusCode!=200{
+		log.Fatal("Status code: ", resp.StatusCode)
+		return
+	}
+
 	var tasks []*models.Task
 	err = json.NewDecoder(resp.Body).Decode(&tasks)
 	if resp.StatusCode != http.StatusOK {
 		log.Fatal(err)
 		return
 	}
+
+	log.Printf("Task count: %d",len(tasks))
 
 	for _,task := range tasks{
 		log.Printf("%#v",task)

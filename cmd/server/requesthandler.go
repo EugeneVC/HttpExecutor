@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"common"
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"math"
@@ -15,19 +16,21 @@ import (
 )
 
 type RequestHandler struct {
-	mux         *http.ServeMux
+	mux         *mux.Router
 	taskStorage repository.TaskStorage
 	counter     common.CounterInt64
 	httpClient  http.Client
 }
 
 func NewRequestHandler(ts repository.TaskStorage, timeout time.Duration) http.Handler {
-	mux := http.NewServeMux()
+	mux := mux.NewRouter()
 
 	s := &RequestHandler{mux: mux, taskStorage: ts, counter: common.NewCounterInt64(), httpClient: http.Client{Timeout: timeout}}
 
-	//REST
-	mux.HandleFunc("/task", s.tasksHandler)
+	//REST API
+	mux.HandleFunc("/task", s.taskCreate).Methods("POST", "PUT")
+	mux.HandleFunc("/task", s.tasksList).Methods("GET")
+	mux.HandleFunc("/task/{id}",s.taskDelete).Methods("DELETE")
 
 	return s
 }
@@ -36,22 +39,10 @@ func (s *RequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.mux.ServeHTTP(w, r)
 }
 
-func (s *RequestHandler) tasksHandler(w http.ResponseWriter, r *http.Request) {
-	var task models.Task
-
-	switch r.Method {
-	case "POST", "PUT":
-		s.taskCreate(w, r, &task)
-	case "GET":
-		s.tasksList(w, r)
-	default:
-		http.Error(w, "Only POST,PUT,GET allowed", http.StatusMethodNotAllowed)
-	}
-
-}
-
-func (s *RequestHandler) taskCreate(w http.ResponseWriter, r *http.Request, task *models.Task) {
+func (s *RequestHandler) taskCreate(w http.ResponseWriter, r *http.Request) {
 	log.Printf("taskCreate")
+
+	var task models.Task
 
 	err := json.NewDecoder(r.Body).Decode(&task)
 	if err != nil {
@@ -93,7 +84,7 @@ func (s *RequestHandler) taskCreate(w http.ResponseWriter, r *http.Request, task
 		return
 	}
 
-	s.taskStorage.Add(task)
+	s.taskStorage.Add(&task)
 }
 
 func (s *RequestHandler) tasksList(w http.ResponseWriter, r *http.Request) {
@@ -135,6 +126,12 @@ func (s *RequestHandler) tasksList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *RequestHandler) taskDelete(w http.ResponseWriter, r *http.Request) {
+	log.Printf("taskDelete")
+}
+
+
 
 func getHttpIntParam(param string) (int,error){
 	if param==""{
