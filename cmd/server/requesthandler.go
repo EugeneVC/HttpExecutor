@@ -30,6 +30,7 @@ func NewRequestHandler(ts repository.TaskStorage, timeout time.Duration) http.Ha
 	//REST API
 	mux.HandleFunc("/task", s.taskCreate).Methods("POST", "PUT")
 	mux.HandleFunc("/task", s.tasksList).Methods("GET")
+	mux.HandleFunc("/task/{id}",s.taskDelete).Methods("GET")
 	mux.HandleFunc("/task/{id}",s.taskDelete).Methods("DELETE")
 
 	return s
@@ -87,6 +88,10 @@ func (s *RequestHandler) taskCreate(w http.ResponseWriter, r *http.Request) {
 	s.taskStorage.Add(&task)
 }
 
+func (s *RequestHandler) taskGet(w http.ResponseWriter, r *http.Request){
+	log.Printf("taskGet")
+}
+
 func (s *RequestHandler) tasksList(w http.ResponseWriter, r *http.Request) {
 	log.Printf("tasksList")
 
@@ -129,6 +134,8 @@ func (s *RequestHandler) tasksList(w http.ResponseWriter, r *http.Request) {
 
 func (s *RequestHandler) taskDelete(w http.ResponseWriter, r *http.Request) {
 	log.Printf("taskDelete")
+
+
 }
 
 
