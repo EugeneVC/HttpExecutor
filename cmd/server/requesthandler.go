@@ -17,12 +17,12 @@ import (
 
 type RequestHandler struct {
 	mux         *mux.Router
-	taskStorage repository.TaskStorage
+	taskStorage repository.TaskRepository
 	counter     common.CounterInt64
 	httpClient  http.Client
 }
 
-func NewRequestHandler(ts repository.TaskStorage, timeout time.Duration) http.Handler {
+func NewRequestHandler(ts repository.TaskRepository, timeout time.Duration) http.Handler {
 	mux := mux.NewRouter()
 
 	s := &RequestHandler{mux: mux, taskStorage: ts, counter: common.NewCounterInt64(), httpClient: http.Client{Timeout: timeout}}

@@ -7,7 +7,7 @@ import (
 )
 
 func TestInsert(t *testing.T) {
-	storage := NewHybridRepository()
+	storage := NewHybridStorage()
 
 	var i int64
 	var cnt int = 10
@@ -30,7 +30,7 @@ func TestInsert(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	storage := NewHybridRepository()
+	storage := NewHybridStorage()
 
 	var i int64
 	var cnt int = 10
@@ -62,7 +62,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestFind(t *testing.T) {
-	storage := NewHybridRepository()
+	storage := NewHybridStorage()
 
 	var i int64
 	var cnt int = 10
@@ -93,7 +93,7 @@ func TestFind(t *testing.T) {
 }
 
 func TestBoundary(t *testing.T) {
-	storage := NewHybridRepository()
+	storage := NewHybridStorage()
 
 	var i int64
 	var cnt int = 10

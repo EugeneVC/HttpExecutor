@@ -2,7 +2,7 @@ package repository
 
 import "models"
 
-type TaskStorage interface {
+type TaskRepository interface {
 	Add(task *models.Task)
 	Delete(key int64) error
 	Get(key int64) (*models.Task,error)

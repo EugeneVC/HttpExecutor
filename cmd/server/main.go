@@ -25,8 +25,8 @@ func main() {
 		log.Fatal("Wrong timeout", os.Getenv("TIMEOUT"))
 	}
 
-	hybridStorage := NewHybridRepository()
-	requestHandler := NewRequestHandler(hybridStorage, 10*time.Duration(timeout)*time.Second)
+	hybridTaskRepository := NewHybridTaskRepository()
+	requestHandler := NewRequestHandler(hybridTaskRepository, 10*time.Duration(timeout)*time.Second)
 	server := NewHttpServer(addr, requestHandler)
 
 	server.Start()

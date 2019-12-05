@@ -8,18 +8,18 @@ import (
 	"sync"
 )
 
-type HybridStorage struct {
+type HybridTaskRepository struct {
 	storage map[int64]*models.Task
 	keys    []int64 //always sorted
 	rw      sync.RWMutex
 }
 
-func NewHybridRepository() repository.TaskStorage {
-	repository := HybridStorage{storage: map[int64]*models.Task{}, keys: []int64{}}
+func NewHybridTaskRepository() repository.TaskRepository {
+	repository := HybridTaskRepository{storage: map[int64]*models.Task{}, keys: []int64{}}
 	return &repository
 }
 
-func (hs *HybridStorage) Add(task *models.Task) {
+func (hs *HybridTaskRepository) Add(task *models.Task) {
 	hs.rw.Lock()
 	defer hs.rw.Unlock()
 
@@ -27,7 +27,7 @@ func (hs *HybridStorage) Add(task *models.Task) {
 	hs.storage[task.ID] = task
 }
 
-func (hs *HybridStorage) Delete(key int64) error {
+func (hs *HybridTaskRepository) Delete(key int64) error {
 	hs.rw.Lock()
 	defer hs.rw.Unlock()
 
@@ -44,7 +44,7 @@ func (hs *HybridStorage) Delete(key int64) error {
 	return nil
 }
 
-func (hs *HybridStorage) Get(key int64) (*models.Task, error) {
+func (hs *HybridTaskRepository) Get(key int64) (*models.Task, error) {
 	hs.rw.RLock()
 	defer hs.rw.RUnlock()
 
@@ -56,7 +56,7 @@ func (hs *HybridStorage) Get(key int64) (*models.Task, error) {
 	return task, nil
 }
 
-func (hs *HybridStorage) Gets(offset, limit int) ([]*models.Task, error) {
+func (hs *HybridTaskRepository) Gets(offset, limit int) ([]*models.Task, error) {
 	hs.rw.RLock()
 	defer hs.rw.RUnlock()
 
