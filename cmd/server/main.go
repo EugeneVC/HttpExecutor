@@ -1,10 +1,8 @@
 package main
 
 import (
-	"context"
 	"github.com/joho/godotenv"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
@@ -27,24 +25,17 @@ func main() {
 		log.Fatal("Wrong timeout", os.Getenv("TIMEOUT"))
 	}
 
-	mapStorage := NewHybridRepository()
-	s := NewRequestHandler(mapStorage, time.Duration(timeout)*time.Second)
+	hybridStorage := NewHybridRepository()
+	requestHandler := NewRequestHandler(hybridStorage, 10*time.Duration(timeout)*time.Second)
+	server := NewHttpServer(addr, requestHandler)
 
-	h := &http.Server{Addr: addr, Handler: s}
-
-	go func() {
-		log.Printf("Listening on %s\n", addr)
-
-		if err := h.ListenAndServe(); err != nil {
-			log.Fatal(err)
-		}
-	}()
+	server.Start()
 
 	<-stop
 
 	log.Println("\nShutting down the server...")
 
-	h.Shutdown(context.Background())
+	server.Stop()
 
 	log.Println("Server gracefully stopped")
 }
