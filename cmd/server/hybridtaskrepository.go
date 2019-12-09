@@ -56,27 +56,26 @@ func (hs *HybridTaskRepository) Get(key int64) (*models.Task, error) {
 	return task, nil
 }
 
-func (hs *HybridTaskRepository) Gets(offset, limit int) ([]*models.Task, error) {
+func (hs *HybridTaskRepository) GetPage(pageNumber,pageSize int) ([]*models.Task, error) {
 	hs.rw.RLock()
 	defer hs.rw.RUnlock()
 
-	if offset < 0 || limit < 0 || offset > len(hs.keys) {
+	if pageNumber < 0 || pageSize <= 0 {
 		return nil, errors.New("Wrong params")
 	}
 
-	if limit == 0 {
-		return nil, nil
-	}
-
-	if offset+limit >= len(hs.keys) {
-		limit = len(hs.keys) - offset
+	pageIndex := len(hs.keys)/pageSize
+	minIndex := pageIndex*pageSize
+	maxIndex := int64(minIndex)+int64(pageSize)
+	if maxIndex>=int64(len(hs.keys)){
+		maxIndex = int64(len(hs.keys)-1)
 	}
 
 	tasks := []*models.Task{}
 
-	for _, key := range hs.keys[offset : offset+limit] {
+	for _, key := range hs.keys[minIndex : maxIndex] {
 		tasks = append(tasks, hs.storage[key])
 	}
 
-	return tasks, nil
+	return nil, nil
 }

@@ -7,17 +7,17 @@ import (
 )
 
 func TestInsert(t *testing.T) {
-	storage := NewHybridStorage()
+	hybridTaskRepository := NewHybridTaskRepository()
 
 	var i int64
 	var cnt int = 10
 
 	for i = 0; i < int64(cnt); i++ {
 		task := models.Task{ID: i}
-		storage.Add(&task)
+		hybridTaskRepository.Add(&task)
 	}
 
-	tasks, err := storage.Gets(0, cnt)
+	tasks, err := hybridTaskRepository.Gets(0, cnt)
 	if err != nil {
 		t.Error(err)
 	}
@@ -30,26 +30,26 @@ func TestInsert(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	storage := NewHybridStorage()
+	hybridTaskRepository := NewHybridTaskRepository()
 
 	var i int64
 	var cnt int = 10
 
 	for i = 0; i < int64(cnt); i++ {
 		task := models.Task{ID: i}
-		storage.Add(&task)
+		hybridTaskRepository.Add(&task)
 	}
 
-	err := storage.Delete(1)
+	err := hybridTaskRepository.Delete(1)
 	if err != nil {
 		t.Error(err)
 	}
-	err = storage.Delete(5)
+	err = hybridTaskRepository.Delete(5)
 	if err != nil {
 		t.Error(err)
 	}
 
-	tasks, err := storage.Gets(0, cnt-2)
+	tasks, err := hybridTaskRepository.Gets(0, cnt-2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,17 +62,17 @@ func TestDelete(t *testing.T) {
 }
 
 func TestFind(t *testing.T) {
-	storage := NewHybridStorage()
+	hybridTaskRepository := NewHybridTaskRepository()
 
 	var i int64
 	var cnt int = 10
 
 	for i = 0; i < int64(cnt); i++ {
 		task := models.Task{ID: i}
-		storage.Add(&task)
+		hybridTaskRepository.Add(&task)
 	}
 
-	task, err := storage.Get(5)
+	task, err := hybridTaskRepository.Get(5)
 	if err != nil {
 		t.Error(err)
 	}
@@ -83,7 +83,7 @@ func TestFind(t *testing.T) {
 		)
 	}
 
-	task, err = storage.Get(20)
+	task, err = hybridTaskRepository.Get(20)
 	if err == nil {
 		t.Error(
 			"expected error",
@@ -93,17 +93,17 @@ func TestFind(t *testing.T) {
 }
 
 func TestBoundary(t *testing.T) {
-	storage := NewHybridStorage()
+	hybridTaskRepository := NewHybridTaskRepository()
 
 	var i int64
 	var cnt int = 10
 
 	for i = 0; i < int64(cnt); i++ {
 		task := models.Task{ID: i}
-		storage.Add(&task)
+		hybridTaskRepository.Add(&task)
 	}
 
-	tasks, err := storage.Gets(0, 0)
+	tasks, err := hybridTaskRepository.Gets(0, 0)
 	if err != nil {
 		t.Error(err)
 	}
@@ -112,12 +112,12 @@ func TestBoundary(t *testing.T) {
 		t.Error("Wrong count elements")
 	}
 
-	tasks, err = storage.Gets(10, 0)
-	if err == nil {
+	tasks, err = hybridTaskRepository.Gets(11, 0)
+	if err != nil || tasks != nil {
 		t.Error(errors.New("Error element"))
 	}
 
-	tasks, err = storage.Gets(9, 20)
+	tasks, err = hybridTaskRepository.Gets(9, 20)
 	if err != nil {
 		t.Error(errors.New("Wrong count elements"))
 	}

@@ -11,7 +11,6 @@ import (
 	"models"
 	"net/http"
 	"repository"
-	"strconv"
 	"time"
 )
 
@@ -30,8 +29,8 @@ func NewRequestHandler(ts repository.TaskRepository, timeout time.Duration) http
 	//REST API
 	mux.HandleFunc("/task", s.taskCreate).Methods("POST", "PUT")
 	mux.HandleFunc("/task", s.tasksList).Methods("GET")
-	mux.HandleFunc("/task/{id}",s.taskDelete).Methods("GET")
-	mux.HandleFunc("/task/{id}",s.taskDelete).Methods("DELETE")
+	mux.HandleFunc("/task/{id}", s.taskGet).Methods("GET")
+	mux.HandleFunc("/task/{id}", s.taskDelete).Methods("DELETE")
 
 	return s
 }
@@ -88,7 +87,7 @@ func (s *RequestHandler) taskCreate(w http.ResponseWriter, r *http.Request) {
 	s.taskStorage.Add(&task)
 }
 
-func (s *RequestHandler) taskGet(w http.ResponseWriter, r *http.Request){
+func (s *RequestHandler) taskGet(w http.ResponseWriter, r *http.Request) {
 	log.Printf("taskGet")
 }
 
@@ -98,27 +97,27 @@ func (s *RequestHandler) tasksList(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
 	var err error
-	var offset,limit int = 0,math.MaxInt32
+	var pageNumber, pageSize int = 0, math.MaxUint32
 
-	val := params.Get("offset")
-	if val!=""{
-		offset,err = getHttpIntParam(val)
-		if err!=nil{
-			http.Error(w, "Wrong offset params", http.StatusBadRequest)
+	val := params.Get("pagenumber")
+	if val != "" {
+		pageNumber, err = common.ConvertStringInInt(val)
+		if err != nil {
+			http.Error(w, "Wrong pagenumber params", http.StatusBadRequest)
 			return
 		}
 	}
 
-	val = params.Get("limit")
-	if val!=""{
-		limit,err = getHttpIntParam(val)
-		if err!=nil{
-			http.Error(w, "Wrong limit params", http.StatusBadRequest)
+	val = params.Get("pagesize")
+	if val != "" {
+		pageSize, err = common.ConvertStringInInt(val)
+		if err != nil {
+			http.Error(w, "Wrong pagesize params", http.StatusBadRequest)
 			return
 		}
 	}
 
-	tasks, err := s.taskStorage.Gets(offset, limit)
+	tasks, err := s.taskStorage.GetPage(pageNumber, pageSize)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -135,21 +134,17 @@ func (s *RequestHandler) tasksList(w http.ResponseWriter, r *http.Request) {
 func (s *RequestHandler) taskDelete(w http.ResponseWriter, r *http.Request) {
 	log.Printf("taskDelete")
 
+	vars := mux.Vars(r)
 
-}
-
-
-
-func getHttpIntParam(param string) (int,error){
-	if param==""{
-		return 0,nil
+	taskID, err := common.ConvertStringInInt64(vars["id"])
+	if err != nil {
+		http.Error(w, "Wrong ID params", http.StatusBadRequest)
+		return
 	}
 
-	val,err := strconv.Atoi(param)
-	if err!=nil {
-		return 0,err
+	err = s.taskStorage.Delete(taskID)
+	if err!=nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
-
-	return val,nil
 }
-

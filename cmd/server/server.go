@@ -10,8 +10,8 @@ type ServerHTTP struct {
 	server http.Server
 }
 
-func NewHttpServer(addr string,handler http.Handler) *ServerHTTP{
-	serverHTTP := ServerHTTP{server:http.Server{Addr: addr, Handler: handler}}
+func NewHttpServer(addr string, handler http.Handler) *ServerHTTP {
+	serverHTTP := ServerHTTP{server: http.Server{Addr: addr, Handler: handler}}
 
 	return &serverHTTP
 }
@@ -26,7 +26,6 @@ func (s *ServerHTTP) Start() {
 	}()
 }
 
-func (s *ServerHTTP) Stop(){
+func (s *ServerHTTP) Stop() {
 	s.server.Shutdown(context.Background())
 }
-
