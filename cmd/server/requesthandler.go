@@ -61,6 +61,8 @@ func (s *RequestHandler) taskCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	request.Header=task.Header
+
 	resp, err := s.httpClient.Do(request)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

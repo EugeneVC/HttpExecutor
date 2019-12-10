@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"math"
 	"models"
 	"testing"
 )
@@ -17,7 +18,16 @@ func TestInsert(t *testing.T) {
 		hybridTaskRepository.Add(&task)
 	}
 
-	tasks, err := hybridTaskRepository.Gets(0, cnt)
+	tasks, err := hybridTaskRepository.GetPage(0, math.MaxInt32)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(tasks) != cnt {
+		t.Error("Wrong count elements")
+	}
+
+	tasks, err = hybridTaskRepository.GetPage(0, cnt)
 	if err != nil {
 		t.Error(err)
 	}
@@ -44,12 +54,18 @@ func TestDelete(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	err = hybridTaskRepository.Delete(1)
+	if err == nil {
+		t.Error("Re-delete error")
+	}
+
 	err = hybridTaskRepository.Delete(5)
 	if err != nil {
 		t.Error(err)
 	}
 
-	tasks, err := hybridTaskRepository.Gets(0, cnt-2)
+	tasks, err := hybridTaskRepository.GetPage(0, math.MaxInt32)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -103,8 +119,8 @@ func TestBoundary(t *testing.T) {
 		hybridTaskRepository.Add(&task)
 	}
 
-	tasks, err := hybridTaskRepository.Gets(0, 0)
-	if err != nil {
+	tasks, err := hybridTaskRepository.GetPage(0, 0)
+	if err == nil {
 		t.Error(err)
 	}
 
@@ -112,12 +128,12 @@ func TestBoundary(t *testing.T) {
 		t.Error("Wrong count elements")
 	}
 
-	tasks, err = hybridTaskRepository.Gets(11, 0)
-	if err != nil || tasks != nil {
+	tasks, err = hybridTaskRepository.GetPage(9, 1)
+	if err != nil || len(tasks) != 1 || tasks[0].ID!=9 {
 		t.Error(errors.New("Error element"))
 	}
 
-	tasks, err = hybridTaskRepository.Gets(9, 20)
+	tasks, err = hybridTaskRepository.GetPage(9, 20)
 	if err != nil {
 		t.Error(errors.New("Wrong count elements"))
 	}

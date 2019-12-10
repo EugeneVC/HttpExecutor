@@ -31,10 +31,14 @@ func (hs *HybridTaskRepository) Delete(key int64) error {
 	hs.rw.Lock()
 	defer hs.rw.Unlock()
 
-	idx := sort.Search(len(hs.keys), func(i int) bool { return hs.keys[i] >= key })
-	if idx == len(hs.keys) {
+	if _,ok := hs.storage[key];!ok{
 		return errors.New("Not found")
 	}
+
+	idx := sort.Search(len(hs.keys), func(i int) bool { return hs.keys[i] >= key })
+	//if idx == len(hs.keys) {
+	//	return errors.New("Not found")
+	//}
 
 	copy(hs.keys[idx:], hs.keys[idx+1:])
 	hs.keys = hs.keys[:len(hs.keys)-1]
@@ -64,11 +68,13 @@ func (hs *HybridTaskRepository) GetPage(pageNumber,pageSize int) ([]*models.Task
 		return nil, errors.New("Wrong params")
 	}
 
-	pageIndex := len(hs.keys)/pageSize
-	minIndex := pageIndex*pageSize
-	maxIndex := int64(minIndex)+int64(pageSize)
+	minIndex := int64(pageNumber)*int64(pageSize)
+	if minIndex>int64(len(hs.keys)){
+		minIndex = int64(len(hs.keys)-1)
+	}
+	maxIndex := minIndex+int64(pageSize)
 	if maxIndex>=int64(len(hs.keys)){
-		maxIndex = int64(len(hs.keys)-1)
+		maxIndex = int64(len(hs.keys))
 	}
 
 	tasks := []*models.Task{}
@@ -77,5 +83,5 @@ func (hs *HybridTaskRepository) GetPage(pageNumber,pageSize int) ([]*models.Task
 		tasks = append(tasks, hs.storage[key])
 	}
 
-	return nil, nil
+	return tasks, nil
 }

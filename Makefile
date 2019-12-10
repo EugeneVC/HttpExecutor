@@ -1,5 +1,11 @@
-.PHONY: build
-build:
+.PHONY: all build-server build-client
+
+all: build-server build-client
+
+build-server:
 	go build -v ./cmd/server/
 
-.DEFAULT_GOAL := build
+build-client:
+	go build -v ./cmd/client/
+
+.DEFAULT_GOAL := all

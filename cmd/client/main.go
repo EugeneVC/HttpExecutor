@@ -88,6 +88,32 @@ func getTasks(serverAddress string) {
 	}
 }
 
+func getTasksByPage(serverAddress string, pageNumber,pageSize int) {
+	resp, err := http.Get(fmt.Sprintf("http://%s/task?pagenumber=%d&pagesize=%d", serverAddress,pageNumber,pageSize))
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	if resp.StatusCode != 200 {
+		log.Fatal("Status code: ", resp.StatusCode)
+		return
+	}
+
+	var tasks []*models.Task
+	err = json.NewDecoder(resp.Body).Decode(&tasks)
+	if resp.StatusCode != http.StatusOK {
+		log.Fatal(err)
+		return
+	}
+
+	log.Printf("Task count: %d", len(tasks))
+
+	for _, task := range tasks {
+		log.Printf("%#v", task)
+	}
+}
+
 func deleteTask(serverAddress string, key int64){
 
 	client := &http.Client{}
@@ -107,8 +133,7 @@ func deleteTask(serverAddress string, key int64){
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		log.Fatal("Status code: ", resp.StatusCode)
-		return
+		log.Println("ERROR: Status code: ", resp.StatusCode)
 	}
 }
 
@@ -125,15 +150,20 @@ func main() {
 		"https://gobyexample.com", "https://stackoverflow.com", "https://habr.com", "https://www.google.com/",
 		"https://golang.org"}
 
-	log.Println("Tasks CREATE")
+	log.Println("Tasks CREATE ########################")
 	createTask(addr, taskURL)
 
-	log.Println("Tasks LIST")
+	log.Println("Tasks LIST ALL  ########################")
 	getTasks(addr)
 
-	log.Println("Tasks DELETE")
-	deleteTask(addr,5)
+	key:= int64(5)
+	log.Println(fmt.Sprintf("Tasks DELETE %d ########################",key))
+	deleteTask(addr,key)
 
-	log.Println("Tasks LIST")
+	log.Println("Tasks LIST ALL ########################")
 	getTasks(addr)
+
+	pageNumber,pageSize := 1,7
+	log.Println("Tasks PAGE  ########################")
+	getTasksByPage(addr,pageNumber,pageSize)
 }
