@@ -20,13 +20,13 @@ func main() {
 	}
 
 	addr := os.Getenv("ADDR")
-	timeout, err := strconv.Atoi(os.Getenv("TIMEOUT"))
+	timeoutSecond, err := strconv.Atoi(os.Getenv("TIMEOUT"))
 	if err != nil {
 		log.Fatal("Wrong timeout", os.Getenv("TIMEOUT"))
 	}
 
 	hybridTaskRepository := NewHybridTaskRepository()
-	requestHandler := NewRequestHandler(hybridTaskRepository, 10*time.Duration(timeout)*time.Second)
+	requestHandler := NewRequestHandler(hybridTaskRepository, time.Duration(timeoutSecond)*time.Second)
 	server := NewHttpServer(addr, requestHandler)
 
 	server.Start()
