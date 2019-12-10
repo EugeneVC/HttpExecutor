@@ -2,7 +2,7 @@ package common
 
 import "strconv"
 
-func ConvertStringInInt(param string) (int, error) {
+func ConvertStringToInt(param string) (int, error) {
 	if param == "" {
 		return 0, nil
 	}
@@ -15,7 +15,7 @@ func ConvertStringInInt(param string) (int, error) {
 	return val, nil
 }
 
-func ConvertStringInInt64(param string) (int64, error) {
+func ConvertStringToInt64(param string) (int64, error) {
 	if param == "" {
 		return 0, nil
 	}

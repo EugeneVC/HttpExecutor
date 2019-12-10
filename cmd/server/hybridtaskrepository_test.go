@@ -11,9 +11,9 @@ func TestInsert(t *testing.T) {
 	hybridTaskRepository := NewHybridTaskRepository()
 
 	var i int64
-	var cnt int = 10
+	var counterTask int = 10
 
-	for i = 0; i < int64(cnt); i++ {
+	for i = 0; i < int64(counterTask); i++ {
 		task := models.Task{ID: i}
 		hybridTaskRepository.Add(&task)
 	}
@@ -23,16 +23,16 @@ func TestInsert(t *testing.T) {
 		t.Error(err)
 	}
 
-	if len(tasks) != cnt {
+	if len(tasks) != counterTask {
 		t.Error("Wrong count elements")
 	}
 
-	tasks, err = hybridTaskRepository.GetPage(0, cnt)
+	tasks, err = hybridTaskRepository.GetPage(0, counterTask)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if len(tasks) != cnt {
+	if len(tasks) != counterTask {
 		t.Error("Wrong count elements")
 	}
 
@@ -43,9 +43,9 @@ func TestDelete(t *testing.T) {
 	hybridTaskRepository := NewHybridTaskRepository()
 
 	var i int64
-	var cnt int = 10
+	var counterTask int = 10
 
-	for i = 0; i < int64(cnt); i++ {
+	for i = 0; i < int64(counterTask); i++ {
 		task := models.Task{ID: i}
 		hybridTaskRepository.Add(&task)
 	}
@@ -70,7 +70,7 @@ func TestDelete(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if len(tasks) != cnt-2 {
+	if len(tasks) != counterTask-2 {
 		t.Fatal("Wrong count elements")
 	}
 
@@ -81,9 +81,9 @@ func TestFind(t *testing.T) {
 	hybridTaskRepository := NewHybridTaskRepository()
 
 	var i int64
-	var cnt int = 10
+	var counterTask int = 10
 
-	for i = 0; i < int64(cnt); i++ {
+	for i = 0; i < int64(counterTask); i++ {
 		task := models.Task{ID: i}
 		hybridTaskRepository.Add(&task)
 	}
@@ -112,9 +112,9 @@ func TestBoundary(t *testing.T) {
 	hybridTaskRepository := NewHybridTaskRepository()
 
 	var i int64
-	var cnt int = 10
+	var counterTask int = 10
 
-	for i = 0; i < int64(cnt); i++ {
+	for i = 0; i < int64(counterTask); i++ {
 		task := models.Task{ID: i}
 		hybridTaskRepository.Add(&task)
 	}

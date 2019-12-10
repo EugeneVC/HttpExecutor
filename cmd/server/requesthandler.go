@@ -103,7 +103,7 @@ func (s *RequestHandler) tasksList(w http.ResponseWriter, r *http.Request) {
 
 	val := params.Get("pagenumber")
 	if val != "" {
-		pageNumber, err = common.ConvertStringInInt(val)
+		pageNumber, err = common.ConvertStringToInt(val)
 		if err != nil {
 			http.Error(w, "Wrong pagenumber params", http.StatusBadRequest)
 			return
@@ -112,7 +112,7 @@ func (s *RequestHandler) tasksList(w http.ResponseWriter, r *http.Request) {
 
 	val = params.Get("pagesize")
 	if val != "" {
-		pageSize, err = common.ConvertStringInInt(val)
+		pageSize, err = common.ConvertStringToInt(val)
 		if err != nil {
 			http.Error(w, "Wrong pagesize params", http.StatusBadRequest)
 			return
@@ -138,7 +138,7 @@ func (s *RequestHandler) taskDelete(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-	taskID, err := common.ConvertStringInInt64(vars["id"])
+	taskID, err := common.ConvertStringToInt64(vars["id"])
 	if err != nil {
 		http.Error(w, "Wrong ID params", http.StatusBadRequest)
 		return

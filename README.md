@@ -1,7 +1,5 @@
 # HttpExecutor
 
-Программа является сервисом для выполнения задач по скачиванию данных их мировой сети Internet.
-Задачи представляют собой структуру в формате JSON с обязательными полями URL, Method(GET,POST,..) и необязательными заголовок, тело запроса и так далее.
-Выполненные задачи сохраняются в памяти сервиса с возможностью просмотра и удаления.
+This program is a service for performing tasks on downloading data from Internet. Tasks are structured in JSON format with the required fields URL, Method (GET, POST, ..) and optional header, request body and so on. Completed tasks are stored in memory of service with the ability to view and delete.
 
-Структура проекта взята из проекта: https://github.com/golang-standards/project-layout
+The structure of the project take from: https://github.com/golang-standards/project-layout
