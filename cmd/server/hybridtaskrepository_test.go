@@ -129,7 +129,7 @@ func TestBoundary(t *testing.T) {
 	}
 
 	tasks, err = hybridTaskRepository.GetPage(9, 1)
-	if err != nil || len(tasks) != 1 || tasks[0].ID!=9 {
+	if err != nil || len(tasks) != 1 || tasks[0].ID != 9 {
 		t.Error(errors.New("Error element"))
 	}
 

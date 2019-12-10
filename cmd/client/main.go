@@ -50,10 +50,6 @@ func createTask(serverAddress string, taskURL []string) {
 				}
 
 				err = json.NewDecoder(resp.Body).Decode(&task)
-				if resp.StatusCode != http.StatusOK {
-					log.Println(task, err)
-					return
-				}
 
 				log.Printf("SUCCESS: %#v", task)
 			}(method, val)
@@ -70,17 +66,13 @@ func getTasks(serverAddress string) {
 		return
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		log.Fatal("Status code: ", resp.StatusCode)
 		return
 	}
 
 	var tasks []*models.Task
 	err = json.NewDecoder(resp.Body).Decode(&tasks)
-	if resp.StatusCode != http.StatusOK {
-		log.Fatal(err)
-		return
-	}
 
 	log.Printf("Task count: %d", len(tasks))
 
@@ -89,25 +81,21 @@ func getTasks(serverAddress string) {
 	}
 }
 
-func getTasksByPage(serverAddress string, pageNumber,pageSize int) {
+func getTasksByPage(serverAddress string, pageNumber, pageSize int) {
 	resp, err := http.Get(fmt.Sprintf("http://%s/task?pagenumber=%d&pagesize=%d", serverAddress,
-		pageNumber,pageSize))
+		pageNumber, pageSize))
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		log.Fatal("Status code: ", resp.StatusCode)
 		return
 	}
 
 	var tasks []*models.Task
 	err = json.NewDecoder(resp.Body).Decode(&tasks)
-	if resp.StatusCode != http.StatusOK {
-		log.Fatal(err)
-		return
-	}
 
 	log.Printf("Task count: %d", len(tasks))
 
@@ -116,11 +104,11 @@ func getTasksByPage(serverAddress string, pageNumber,pageSize int) {
 	}
 }
 
-func deleteTask(serverAddress string, key int64){
+func deleteTask(serverAddress string, key int64) {
 
 	client := &http.Client{}
 
-	request, err := http.NewRequest("DELETE", fmt.Sprintf("http://%s/task/%d", serverAddress,key),
+	request, err := http.NewRequest("DELETE", fmt.Sprintf("http://%s/task/%d", serverAddress, key),
 		nil)
 	if err != nil {
 		log.Fatal(err)
@@ -135,7 +123,7 @@ func deleteTask(serverAddress string, key int64){
 
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		log.Println("ERROR: Status code: ", resp.StatusCode)
 	}
 }
@@ -159,14 +147,14 @@ func main() {
 	log.Println("Tasks LIST ALL  ########################")
 	getTasks(addr)
 
-	key:= int64(5)
-	log.Println(fmt.Sprintf("Tasks DELETE %d ########################",key))
-	deleteTask(addr,key)
+	key := int64(5)
+	log.Println(fmt.Sprintf("Tasks DELETE %d ########################", key))
+	deleteTask(addr, key)
 
 	log.Println("Tasks LIST ALL ########################")
 	getTasks(addr)
 
-	pageNumber,pageSize := 1,7
+	pageNumber, pageSize := 1, 7
 	log.Println("Tasks PAGE  ########################")
-	getTasksByPage(addr,pageNumber,pageSize)
+	getTasksByPage(addr, pageNumber, pageSize)
 }
