@@ -24,7 +24,8 @@ type RequestHandler struct {
 func NewRequestHandler(ts repository.TaskRepository, timeout time.Duration) http.Handler {
 	mux := mux.NewRouter()
 
-	s := &RequestHandler{mux: mux, taskStorage: ts, counter: common.NewCounterInt64(), httpClient: http.Client{Timeout: timeout}}
+	s := &RequestHandler{mux: mux, taskStorage: ts, counter: common.NewCounterInt64(),
+		httpClient: http.Client{Timeout: timeout}}
 
 	//REST API
 	mux.HandleFunc("/task", s.taskCreate).Methods("POST", "PUT")

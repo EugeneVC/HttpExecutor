@@ -35,7 +35,8 @@ func createTask(serverAddress string, taskURL []string) {
 				}
 				//fmt.Println(string(body))
 
-				resp, err := http.Post(fmt.Sprintf("http://%s/task", serverAddress), "application/json", bytes.NewBuffer([]byte(bodyRequest)))
+				resp, err := http.Post(fmt.Sprintf("http://%s/task", serverAddress),
+					"application/json", bytes.NewBuffer([]byte(bodyRequest)))
 				if err != nil {
 					log.Println(task, err)
 					return
@@ -89,7 +90,8 @@ func getTasks(serverAddress string) {
 }
 
 func getTasksByPage(serverAddress string, pageNumber,pageSize int) {
-	resp, err := http.Get(fmt.Sprintf("http://%s/task?pagenumber=%d&pagesize=%d", serverAddress,pageNumber,pageSize))
+	resp, err := http.Get(fmt.Sprintf("http://%s/task?pagenumber=%d&pagesize=%d", serverAddress,
+		pageNumber,pageSize))
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -118,7 +120,8 @@ func deleteTask(serverAddress string, key int64){
 
 	client := &http.Client{}
 
-	request, err := http.NewRequest("DELETE", fmt.Sprintf("http://%s/task/%d", serverAddress,key), nil)
+	request, err := http.NewRequest("DELETE", fmt.Sprintf("http://%s/task/%d", serverAddress,key),
+		nil)
 	if err != nil {
 		log.Fatal(err)
 		return
